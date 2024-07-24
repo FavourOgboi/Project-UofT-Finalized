@@ -13,7 +13,7 @@ Click here for more information about [Project 3](https://github.com/HSaleem352/
 - Hamza Saleem - @HSaleem352
 - Mina Bagheri - @minalbm
 - Dean Ninalga - @Ninalgad 
-- Fozia - @FoziaY
+- Fozia - @FoziaY / @FavourOgboi
 - Shan Lian - @Lians03
 - Alejandra - @AlejandraFeatherston
 
