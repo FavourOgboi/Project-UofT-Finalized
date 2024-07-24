@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Research | COVID-19 Risk Wizard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- COVID_Predictor.css -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/COVID_Predictor.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark" aria-label="First navbar">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">COVID-19 Risk Wizard</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/OurTeam">Our Team</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/Limitations_References">Limitations & References</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Modal -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-scale">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Welcome to COVID-19 Risk Wizard!</h5>
+            </div>
+            <div class="modal-body" style="text-align: center; background-color: #E5DFCF;">
+            <p>We're excited to introduce you to our predictive model designed to assess the risk of moderate to severe COVID-19 in breast cancer 
+            patients. Leveraging a comprehensive dataset, we've developed an algorithm that analyzes various patient factors to provide valuable insights.</p>
+            <p> </p>
+            <p><span style="font-weight: bold; color: #4C5D6A;">Important Note:</span> It's essential to recognize that while our model offers valuable predictions, it's not infallible. Like any tool, it has limitations,
+            primarily due to the constraints of our dataset. Therefore, the results should be interpreted with caution and not solely relied upon for medical decision-making.</p>
+            <p> </p>
+            <p>Press "Continue" to begin the prediction process.</p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-bs-dismiss="modal">Continue</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Prediction Result Modal -->
+    <div class="modal fade" id="outputModal" tabindex="-1" role="dialog" aria-labelledby="outputModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-scale" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="outputModalLabel">Prediction Output</h5>
+                </div>
+                <div class="modal-body" style="text-align: center; background-color: #E5DFCF;">
+                    <pre id="output-popup"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instruction -->
+    <div class="instruction">
+        <p>
+            <strong>Instructions for Questionnaire:</strong>
+        </p>
+        <ul>
+            <li>Our model is designed for female patients only.</li>
+            <li>Answer all questions before hitting "Predict" to avoid an error message.</li>
+            <li>Missed questions will be highlighted in red to facilitate identification.</li>
+            <li>Hover over the question mark icon for additional information on each question.</li>
+        </ul>
+        <p>
+            <strong>Prediction Process:</strong>
+        </p>
+        <ul>
+            <li>After answering all questions, press "Predict."</li>
+            <li>A pop-up window will display the prediction result.</li>
+            <li>To perform another test, either reload the page or close the pop-up and adjust answers before predicting again.</li>
+        </ul>
+    </div>
+    
+    <!-- Questionnaire -->
+    <div class="content-box">
+        <div class="questionnaire">
+            <!-- Dropdown menu questions -->
+            <div class="dropdown-questions">
+                <p>Age <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose any age between 30 to 89 years old.
+                    Ages above 89 will default to 90."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <select name="age" id="ageSelect">
+                    <option value=""></option>
+                </select>
+                <p class="spacer">&nbsp;</p>
+                <p>Race/Ethnicity <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Select the race/ethnicity that best represents you."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <select name="Race/Ethnicity">
+                    <option value=""></option>
+                    <option value="Hispanic">Hispanic</option>
+                    <option value="Non-Hispanic AAPI">Non-Hispanic Asian American and Pacific Islanders(AAPI)</option>
+                    <option value="Non-Hispanic Black">Non-Hispanic Black</option>
+                    <option value="Non-Hispanic White">Non-Hispanic White</option>
+                    <option value="Other">Other</option>
+                </select>
+                <p class="spacer">&nbsp;</p>
+                <p>Residential Area Type <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="
+                    Urban: Cities and large urban centers,
+                    Suburban: Areas surrounding cities,
+                    Rural: Countryside or remote areas"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <select name="Residential Area Type">
+                    <option value=""></option>
+                    <option value="Urban">Urban/City</option>
+                    <option value="Suburban">Suburban/Town</option>
+                    <option value="Rural">Rural/Country</option>
+                </select>
+                <p class="spacer">&nbsp;</p>
+                <p>Smoking Status <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="
+                    Never: If you have never smoked,
+                    Former or Current: If you used to smoke or currently smoke"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <select name="Smoking Status">
+                    <option value=""></option>
+                    <option value="Never">Never</option>
+                    <option value="Current or Former">Current or Former</option>
+                </select>
+                <p class="spacer">&nbsp;</p>
+                <p>Cancer Status <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Please select one of the following options:
+                    Remote Remission/No Evidence of Disease (>5 years),
+                    Recent Remission/No Evidence of Disease (≤5 years),
+                    Responding to Medications (Active & Responding),
+                    Stable Cancer with Medication (Active & Stable),
+                    Progressing Cancer despite Medications (Active & Progressing)
+                    Unknown status"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <select name="Cancer Status">
+                    <option value=""></option>
+                    <option value="Remission (NED, Remote)">Remission (NED, Remote)</option>
+                    <option value="Remission (NED, Recent)">Remission (NED, Recent)</option>
+                    <option value="Active & Responding">Active & Responding</option>
+                    <option value="Active & Stable">Active & Stable</option>
+                    <option value="Active & Progressing">Active & Progressing</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <p class="spacer">&nbsp;</p>
+            </div>
+            <!-- Yes/No questions -->
+            <div class="yes-no-questions">
+                <p>No Cancer Treatment In the 3 Months Prior to COVID-19 <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Have you had cancer treatment 3 months prior to having COVID-19?"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="cancer treatment" value="yes"> Yes</label>
+                <label><input type="radio" name="cancer treatment" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+                <p>Diabetes Mellitus <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Diabetes mellitus (DM) is a metabolic disease, involving inappropriately elevated blood glucose levels."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="Diabetes Mellitus" value="yes"> Yes</label>
+                <label><input type="radio" name="Diabetes Mellitus" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+                <p>Cardiovascular Comorbidity (CAD, CHF, Afib, Arrhythmia NOS, PVD, CVA, Cardiac Disease NOS)<button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="CAD = coronary artery disease, CHF = Chronic heart failure, Afib = Atrial fibrillation, Arrhythmia NOS = Arrhythmia, Not Otherwise Specified, PVD = Peripheral Vascular Disease, CVA = Cerebrovascular Accident, Cardiac Disease NOS = Cardiac Disease Not Otherwise Specified"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="Cardiovascular Comorbidity" value="yes"> Yes</label>
+                <label><input type="radio" name="Cardiovascular Comorbidity" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+                <p>Pulmonary Comorbidities <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Pulmonary comorbidities refer to additional medical conditions that coexist with a primary lung disorder, impacting overall respiratory health."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="Pulmonary Comorbidities" value="yes"> Yes</label>
+                <label><input type="radio" name="Pulmonary Comorbidities" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+                <p>Renal Comorbidities <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Renal comorbidities additional medical conditions that coexist with a primary renal (kidney) disorder, influencing overall kidney health and function."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="Renal Comorbidities" value="yes"> Yes</label>
+                <label><input type="radio" name="Renal Comorbidities" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+                <p>Obesity <button type="button" class="btn btn-question" data-bs-toggle="tooltip" data-bs-placement="right" title="Obesity is a medical condition characterized by excessive body fat accumulation, associated with increased health risks."><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-question" viewBox="0 0 16 16">
+                    <path d="M8.05 9.6c.336 0 .504-.24.554-.627.04-.534.198-.815.847-1.26.673-.475 1.049-1.09 1.049-1.986 0-1.325-.92-2.227-2.262-2.227-1.02 0-1.792.492-2.1 1.29A1.7 1.7 0 0 0 6 5.48c0 .393.203.64.545.64.272 0 .455-.147.564-.51.158-.592.525-.915 1.074-.915.61 0 1.03.446 1.03 1.084 0 .563-.208.885-.822 1.325-.619.433-.926.914-.926 1.64v.111c0 .428.208.745.585.745"/>
+                    <path d="m10.273 2.513-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911z"/>
+                    <path d="M7.001 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>
+                  </svg></button></p>
+                <label><input type="radio" name="Obesity" value="yes"> Yes</label>
+                <label><input type="radio" name="Obesity" value="no"> No</label>
+                <p class="spacer">&nbsp;</p>
+
+            </div>
+            <!-- Predict button -->
+            <button id="predictButton" type="button" class="predict-button">PREDICT</button>
+            <!-- Error message -->
+            <p> </p>
+            <p id="errorMessage" class="error-message">Please answer all questions before predicting.</p>
+        </div>
+    </div>
+
+    <!-- Precautions -->
+    <div class="instruction">
+        <p>
+            <strong>Precautions for Moderate to Severe Covid: </strong>
+        </p>
+        <ul>
+            <li>Precautions for mild to severe COVID-19 cases typically revolve around preventing the spread of the virus and managing symptoms. Here are some general precautions:</li>
+            <li>Isolation and Quarantine: If you test positive for COVID-19, isolate yourself from others, including those in your household, to prevent spreading the virus. Follow guidelines from health authorities on the duration of isolation, which typically ranges from 10 to 14 days after symptom onset or positive test result.</li>
+            <li>Seek Medical Advice: If you experience mild symptoms, contact your healthcare provider for guidance on monitoring your condition at home. If symptoms worsen, such as difficulty breathing or persistent chest pain, seek medical attention immediately.</li>
+            <li>Rest and Hydration: Get plenty of rest and stay hydrated. Adequate hydration helps your body fight the infection and can alleviate symptoms like fever and sore throat.</li>
+            <li>Medications: Take over-the-counter medications such as acetaminophen (Tylenol) or ibuprofen (Advil, Motrin) to reduce fever and alleviate pain, if recommended by your healthcare provider.</li>
+            <li>Monitor Symptoms: Keep track of your symptoms, especially if they worsen or if you develop new symptoms. Contact your healthcare provider if you experience any concerning changes.</li>
+            <li>Wear a Mask: When around others or if you must leave your isolation area (such as going to a healthcare facility), wear a mask to prevent spreading the virus to others. Ensure the mask fits snugly over your nose and mouth.</li>
+            <li>Cover your mouth and nose with a tissue or your elbow when coughing or sneezing. Dispose of tissues properly and wash your hands immediately afterward.</li>
+            <li>Wash your hands frequently with soap and water for at least 20 seconds, especially after coughing, sneezing, or touching potentially contaminated surfaces. If soap and water are not available, use hand sanitizer with at least 60% alcohol.</li>
+            <li>Regularly clean and disinfect high-touch surfaces in your home, such as doorknobs, light switches, countertops, and electronic devices.</li>
+            <li>Stay informed about local public health guidelines and recommendations, as they may change based on the prevalence of COVID-19 in your area. Follow guidelines for testing, quarantine, and isolation as advised by health authorities.</li>
+
+        </ul>
+        
+    </div>
+
+    <!-- Modals Animation -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- //////////////////// JavaScript ////////////////////////// -->
+
+    <!-- Show the modal when the page loads -->
+    <script>
+        $(document).ready(function() {
+            $('#welcomeModal').modal('show');
+        });
+    </script>
+
+    <!-- Generate options for ages 30 to 90 -->
+    <script>
+        var ageSelect = document.getElementById("ageSelect");
+        for (var i = 30; i <= 90; i++) {
+            var option = document.createElement("option");
+            option.value = i;
+            option.text = i;
+            ageSelect.appendChild(option);
+        }
+    </script>
+
+    <!-- Initialize the tooltip | Question mark hover -->
+    <script>
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+
+    <!-- Checking if all questions are answered -->
+    <script>
+        var formData = {};
+        document.addEventListener("DOMContentLoaded", function() {
+            function checkAllQuestionsAnswered() {
+                var selects = document.querySelectorAll("select");
+                var radios = document.querySelectorAll("input[type='radio']");
+                var allAnswered = true;
+                selects.forEach(function(select) {
+                    if (select.value === "") {
+                        allAnswered = false;
+                    }
+                });
+                radios.forEach(function(radio) {
+                    var name = radio.getAttribute("name");
+                    if (!document.querySelector("input[name='" + name + "']:checked")) {
+                        allAnswered = false;
+                    }
+                });
+                return allAnswered;
+            }
+
+
+            // Function to handle predict button click
+            function handlePredictButtonClick() {
+                var selects = document.querySelectorAll("select");
+                var radios = document.querySelectorAll("input[type='radio']");
+                if (checkAllQuestionsAnswered()) {
+                    // All questions answered, proceed with prediction
+                    console.log("All questions answered. Proceeding with prediction...");
+
+                    document.getElementById("errorMessage").style.display = "none"; // Hide error message
+                    selects.forEach(function(select) {
+                        select.classList.remove("unanswered");
+                    });
+                    radios.forEach(function(radio) {
+                        var name = radio.getAttribute("name");
+                        var questionRadioButtons = document.querySelectorAll("input[name='" + name + "']");
+                        var isAnswered = false;
+                        questionRadioButtons.forEach(function(radioButton) {
+                            if (radioButton.checked) {
+                                isAnswered = true;
+                            }
+                        });
+                        if (!isAnswered) {
+                            questionRadioButtons.forEach(function(radioButton) {
+                                radioButton.classList.add("unanswered");
+                            });
+                        } else {
+                            // Remove the highlight if the question is answered
+                            questionRadioButtons.forEach(function(radioButton) {
+                                radioButton.classList.remove("unanswered");
+                            });
+                        }
+
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
+                        // Collect form data
+                    
+                    selects.forEach(function(select) {
+                        formData[select.name] = select.value;
+                    });
+                    radios.forEach(function(radio) {
+                        if (radio.checked) {
+                            formData[radio.name] = radio.value;
+                        }
+                    });
+
+                    
+
+                    });
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+                    // Send Data
+                    
+                    $.ajax({
+                    url: '/predictor',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    dataType: "json",
+                    success: function(response) {
+
+                        console.log("Response received:", response.value);
+                        percentage_value = response.value*100
+
+                       
+                        $('#output-popup').text("This individual has an estimated risk of " + percentage_value + "% for moderate-to-severe COVID-19.");
+                        $('#outputModal').modal('show');
+           
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        }
+                    });
+
+                    
+
+////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+                } else {
+                    // Not all questions answered, display error message and highlight unanswered questions
+                    document.getElementById("errorMessage").style.display = "block";
+                    selects.forEach(function(select) {
+                        if (select.value === "") {
+                            select.classList.add("unanswered");
+                        } else {
+                            select.classList.remove("unanswered");
+                        }
+                    });
+                    radios.forEach(function(radio) {
+                        var name = radio.getAttribute("name");
+                        if (!document.querySelector("input[name='" + name + "']:checked")) {
+                            document.querySelectorAll("input[name='" + name + "']").forEach(function(radioButton) {
+                                radioButton.classList.add("unanswered");
+                            });
+                        } else {
+                            document.querySelectorAll("input[name='" + name + "']").forEach(function(radioButton) {
+                                radioButton.classList.remove("unanswered");
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Add event listener to predict button
+            document.getElementById("predictButton").addEventListener("click", handlePredictButtonClick);
+        });
+    </script>
+
+
+    <!-- Modal Animations -->
+    <script>
+        // Animation to zoom in
+        $('#welcomeModal').on('shown.bs.modal', function () {
+            $('.modal-scale').addClass('animate__animated animate__zoomIn');
+        });
+
+        // Remove fade class when the modals are shown
+        $('#welcomeModal').on('show.bs.modal', function (e) {
+            $(this).removeClass('fade');
+        });
+        $('#outputModal').on('show.bs.modal', function (e) {
+            $(this).removeClass('fade');
+        });
+    </script>
+</body>
+</html>
